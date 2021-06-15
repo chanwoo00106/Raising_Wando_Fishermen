@@ -12,11 +12,36 @@
 #define L 768
 #define SPACEBAR 32
 
+char newStoryUp[][100] = {
+	{"(앞)송미라 대통령 , 완도전복 맛본뒤 극찬 ... '지금까지 볼 수 없었던 맛'"},
+	{"(뒤)안은경 대통령 완도전복 먹은뒤 완도산 전복 사재기..."},
+	{"지방 적고 단백질 풍부… 영양만점 ‘완도 전복"},
+	{"추석 명절선물, '완도 전복' 대박 났다"},
+	{"전복 배송 트럭, 전북에서 전복되어..."},
+	{"면역력 덩어리, 완도 전복… 산소포장으로‘청정 배송"},
+	{"'전복 먹으면 면역력 향상'…완도군"},
+	{"완도전복 작년 설보다 270% 매출 증가, 없어서 못구해..."},
+	{"백종원 '완도산 전복 상품성 있다'"},
+	{"다시마가 희귀해져 전복 양식이 힘들어..."}
+};
+char newStoryDown[][100] = {
+	{"태풍에 의해 중리마을 오모씨 양식장 사고발생"},
+	{"지구온난화로 인해 완도앞바다 수온상승"},
+	{"중국어선 완도전복 훔쳐가..."},
+	{"완도산 전복 먹고 배탈이나..."},
+	{"완도산 전복 먹고 사람이 죽어..."},
+	{"현 완도 이장 비리로 인해 전복값 떨어져..."},
+	{"완도 앞바다에 유람선 침몰, 기름 유출로 인해 완도 앞바다 오염되..."},
+	{"완도서 전복노예 발견돼... 완도산 전복 불매운동 활발..."},
+	{"완도 전복에 미세플라스틱 발련돼..."},
+	{"완도 전복에서 신종 바이러스 발견"}
+};
+
 void gotoxy(int x, int y);
 void showStart();
 void setDisplay();
 void showMoney(int abalone, int money, int Aclick, int big, int smal, int numHome, int nursery, int quote, int price);
-void openStore(int *abalone, int *money, int *Aclick, int *big, int *smal, int numHome, int *nursery, int quote);
+void openStore(int *abalone, int *money, int *Aclick, int *big, int *smal, int numHome, int *nursery, int quote, char news[]);
 void harvest(int* Aclick, int* abalone, int* big, int* smal);
 void levelUp(int* level, int* Aclick, int* money, int* price);
 
@@ -29,44 +54,72 @@ int main() {
 	KEY_EVENT_RECORD keyEvent;
 
 	srand(time(NULL));
-	int unsigned abalone = 0, money = 0, Aclick = 1, nursery = 0, numHome = 0, smal = 0, big = 0, quote, cnt = 0, limit, level = 1, price = 10000;
+	int unsigned abalone = 0, money = 0, Aclick = 1, nursery = 0, numHome = 0, smal = 0, big = 0, quote, cnt = 0, limit, level = 1, price = 10000, temp;
 	setDisplay();
 	quote = (rand() % 150 + 20) * 100;
+	temp = quote;
+	char news[100] = "완도 어민 오**, 완도의 이장이 되다";
 	limit = rand() % 500 + 100;
 	showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 	while (1) {
-		if (cnt >= limit) {
-			quote = (rand() % 100 + 25) * 100;
-			limit = rand() % 500 + 100;
-			cnt = 0;
-		}
-		else cnt++;
-		gotoxy(29, 1);
-		int key = _getch();
-		ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &rc, 1, &dw); //핸들정보       
-		keyEvent = rc.Event.KeyEvent;
-		
-		if (keyEvent.bKeyDown) {}
-		else {
-			//나가기
-			if (key == Q || key == q) {
-				system("cls");
+		loot:
+		if (_kbhit()) {
 
-				exit(1);
+			if (cnt >= limit) {
+				quote = (rand() % 100 + 25) * 100;
+				limit = rand() % 500 + 100;
+				cnt = 0;
+				if (quote > temp){
+					strcpy_s(news, 100, newStoryUp[rand() % 10]);
+				}
+				else {
+					strcpy_s(news, 100, newStoryDown[rand() % 10]);
+				}
+				temp = quote;
+			}
+			else cnt++;
+
+			int key = _getch();
+			ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &rc, 1, &dw); //핸들정보       
+			keyEvent = rc.Event.KeyEvent;
+
+			if (keyEvent.bKeyDown) {}
+			else {
+				//나가기
+				if (key == Q || key == q) {
+					re:
+					system("cls");
+
+					printf("정말 종료하시겠습니까? (y/n)\n");
+					int ch;
+					switch (ch = _getch()) {
+					case 121:
+					case 891:
+						exit(1);
+					case 110:
+					case 780:
+						system("cls");
+						setDisplay();
+						showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
+						goto loot;
+					default:
+						goto re;
+					}
+				}
+
+				//레벨업
+				else if (key == l || key == L) levelUp(&level, &Aclick, &money, &price);
+
+				// 상점 열기
+				else if (key == f || key == F) openStore(&abalone, &money, &Aclick, &big, &smal, numHome, &nursery, quote, news);
+
+				// 전복 채취
+				else if (key == SPACEBAR) harvest(&Aclick, &abalone, &big, &smal);
 			}
 
-			//레벨업
-			else if (key == l || key == L) levelUp(&level, &Aclick, &money, &price);
-
-			// 상점 열기
-			else if (key == f || key == F) openStore(&abalone, &money, &Aclick, &big, &smal, numHome, &nursery, quote);
-
-			// 전복 채취
-			else if (key == SPACEBAR) harvest(&Aclick, &abalone, &big, &smal);
+			// 메뉴창 업데이트
+			showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 		}
-
-		// 메뉴창 업데이트
-		showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 	}
 	
 	return 0;
@@ -88,10 +141,10 @@ void showStart() {
 	printf("                                000   0000     0           0     0000    0    0   0\n");
 	printf("                                 0    0        00000000     0   0   0    000000   0\n");
 	printf("                              0000000 0            0         000    0      0\n");
-	printf("                                0             00000000000           0      0\n");
-	printf("                                000000                                     0000000\n\n");
-	printf("                                      00000000  0       000     000000    0\n");
-	printf("                                             0  0      0   0         0    0\n");
+	printf("                                0                  0                0      0\n");
+	printf("                                000000        00000000000           0      0000000\n\n");
+	printf("                                      00000000  0       000    00000000   0\n");
+	printf("                                             0  0      0   0          0   0\n");
 	printf("                                      0000000   0       000          0    0\n");
 	printf("                                           0    0     0000000       0     0\n");
 	printf("                                          0     0        0         0      0\n");
@@ -188,9 +241,13 @@ void showMoney(int abalone, int money, int Aclick, int big, int smal, int level,
 
 }
 
-void openStore(int *abalone, int *money, int *Aclick, int* big, int* smal, int numHome, int *nursery, int quote) {
+void openStore(int *abalone, int *money, int *Aclick, int* big, int* smal, int numHome, int *nursery, int quote, char news[]) {
 	static int nurseryPrice = 1500000;
 	system("cls");
+
+	gotoxy(2, 10);
+	printf("[속보] %s", news);
+
 	gotoxy(10, 1);
 	printf("                                                                                                  상점 나가기(f)\n");
 	printf("         ┌----상점-------------------------------------------------------------------------------------------┐\n");
@@ -268,7 +325,7 @@ void levelUp(int* level, int* Aclick, int* money, int* price) {
 		*money -= *price;
 		*price += 5000;
 		*level += 1;
-		if (*level % 10 == 0) *Aclick += 1;
+		if (*level % 5 == 0) *Aclick += 1;
 		// 레벨업 띄우기
 		gotoxy(24, 1);
 		printf("           LEVEL UP!                 ");
