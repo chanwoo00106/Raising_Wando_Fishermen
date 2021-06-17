@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define ll long long
 #define q 113
 #define f 102
 #define Q 813
-#define F 702
+#define F 70
 #define l 108
 #define L 768
 #define SPACEBAR 32
@@ -15,40 +16,42 @@
 int trash;
 
 char newStoryUp[][100] = {
-	{"(앞)송미라 대통령 , 완도전복 맛본뒤 극찬 ... '지금까지 볼 수 없었던 맛'"},
+	{"(앞)송미라 대통령, 완도 전복 맛본 뒤 극찬 ... '지금까지 볼 수 없었던 맛'"},
 	{"(뒤)안은경 대통령 완도전복 먹은뒤 완도산 전복 사재기..."},
-	{"지방 적고 단백질 풍부… 영양만점 ‘완도 전복"},
+	{"지방 적고 단백질 풍부… 영양만점 '완도 전복'"},
 	{"추석 명절선물, '완도 전복' 대박 났다"},
 	{"전복 배송 트럭, 전북에서 전복되어..."},
-	{"면역력 덩어리, 완도 전복… 산소포장으로‘청정 배송"},
+	{"면역력 덩어리, 완도 전복… 산소포장으로'청정 배송'"},
 	{"'전복 먹으면 면역력 향상'…완도군"},
-	{"완도전복 작년 설보다 270% 매출 증가, 없어서 못구해..."},
+	{"완도 전복 작년 설보다 매출 증가"},
 	{"백종원 '완도산 전복 상품성 있다'"},
 	{"다시마가 희귀해져 전복 양식이 힘들어..."}
 };
-char newStorylldown[][100] = {
-	{"태풍에 의해 중리마을 오모씨 양식장 사고발생"},
-	{"지구온난화로 인해 완도앞바다 수온상승"},
-	{"중국어선 완도전복 훔쳐가..."},
+char newStorydown[][100] = {
+	{"태풍에 의해 중리마을 오 모 씨 양식장 사고 발생"},
+	{"지구온난화로 완도 전복 폐사, 이에 전복 마니아들은 해외 전복을 더 많이 사..."},
+	{"'완도군', 어민의 마음따윈 생각하지 않고 강제 전복 할인, 오XX '완도군 ㅆㅂ'"},
 	{"완도산 전복 먹고 배탈이나..."},
 	{"완도산 전복 먹고 사람이 죽어..."},
 	{"현 완도 이장 비리로 인해 전복값 떨어져..."},
-	{"완도 앞바다에 유람선 침몰, 기름 유출로 인해 완도 앞바다 오염되..."},
+	{"완도 앞바다에 유람선 침몰, 기름 유출로 인해 완도 앞바다 오염돼..."},
 	{"완도서 전복노예 발견돼... 완도산 전복 불매운동 활발..."},
-	{"완도 전복에 미세플라스틱 발련돼..."},
+	{"완도 전복에 미세 플라스틱 발견돼..."},
 	{"완도 전복에서 신종 바이러스 발견"}
 };
 
 void gotoxy(int x, int y);
 void showStart();
-void setlldisplay();
+void setdisplay();
 void showMoney(long long abalone, long long money, long long Aclick, long long big, long long smal, long long numHome, long long nursery, long long quote, long long price);
 void openStore(long long *abalone, long long *money, long long *Aclick, long long *big, long long *smal, long long numHome, long long *nursery, long long quote, char news[]);
 void harvest(long long* Aclick, long long* abalone, long long* big, long long* smal);
 void levelUp(long long* level, long long* Aclick, long long* money, long long* price);
-void finish(long long* money);
+void finish(long long money);
+
 
 int main() {
+	system("title 완도 어민 키우기");
 	showStart();
 
 	INPUT_RECORD rc;
@@ -60,14 +63,14 @@ int main() {
 	long long abalone = 0, money = 0, Aclick = 1, nursery = 0, numHome = 0, smal = 0, big = 0, cnt = 0, level = 1, price = 10000, temp;
 	int quote, limit;
 
-	setlldisplay();
+	setdisplay();
 	quote = (rand() % 150 + 20) * 100;
 	temp = quote;
 	char news[100] = "완도 어민 오**, 완도의 이장이 되다";
 	limit = rand() % 500 + 100;
 	showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 	while (1) {
-		loot:
+	loot:
 		if (_kbhit()) {
 
 			if (cnt >= limit) {
@@ -78,7 +81,7 @@ int main() {
 					strcpy_s(news, 100, newStoryUp[rand() % 10]);
 				}
 				else {
-					strcpy_s(news, 100, newStorylldown[rand() % 10]);
+					strcpy_s(news, 100, newStorydown[rand() % 10]);
 				}
 				temp = quote;
 			}
@@ -92,7 +95,7 @@ int main() {
 			else {
 				//나가기
 				if (key == Q || key == q) {
-				re:
+					re:
 					system("cls");
 
 					printf("정말 종료하시겠습니까? (y/n)\n");
@@ -104,10 +107,10 @@ int main() {
 					case 110:
 					case 780:
 						system("cls");
-						setlldisplay();
+						setdisplay();
 						showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 						goto loot;
-					lldefault:
+					default:
 						goto re;
 					}
 				}
@@ -120,8 +123,6 @@ int main() {
 
 				// 전복 채취
 				else if (key == SPACEBAR) harvest(&Aclick, &abalone, &big, &smal);
-
-				else if (key == 99 || key == 67) finish(&money);
 			}
 			
 
@@ -133,13 +134,12 @@ int main() {
 	return 0;
 }
 
-
-//----------------------------------------
 void gotoxy(int x, int y) {
 	COORD Pos = { y - 1,x - 1 };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 }
-//----------------------------------------
+
+// 시작 메뉴
 void showStart() {
 	int get = 0;
 	A:
@@ -211,14 +211,15 @@ void showStart() {
 	case 52:
 		system("cls");
 		exit(1);
-	lldefault:
+	default:
 		system("cls");
 		goto A;
 	}
 }
 
-void setlldisplay() {
-	//heallder
+// 게임 메뉴
+void setdisplay() {
+	//header
 	printf("         ┌---------------------------------------------------------------------------------------------------┐\n");
 	printf("         │                                                                                                   │\n");
 	printf("         └---------------------------------------------------------------------------------------------------┘\n");
@@ -233,10 +234,11 @@ void setlldisplay() {
 	printf("         └---------------------------------------------------------------------------------------------------┘\n");
 }
 
+// 여러가지 정보 보여주기
 void showMoney(long long abalone, long long money, long long Aclick, long long big, long long smal, long long level, long long nursery, long long quote, long long price) {
 	// header
 	gotoxy(2, 12);
-	printf("%4lld : 클릭당 전복 개수%68lld원 : 돈", Aclick, money);
+	printf("%5lld : 클릭당 전복 개수%67lld원 : 돈", Aclick, money);
 	gotoxy(4, 86);
 	printf("1미 %6lld원 : 전복 시세", quote);
 	
@@ -261,6 +263,7 @@ void showMoney(long long abalone, long long money, long long Aclick, long long b
 
 }
 
+// 시장
 void openStore(long long *abalone, long long *money, long long *Aclick, long long* big, long long* smal, long long numHome, long long *nursery, long long quote, char news[]) {
 	static int nurseryPrice = 1500000;
 	system("cls");
@@ -284,7 +287,7 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 		printf("%d", key);
 		if (key == f || key == F) {
 			system("cls");
-			setlldisplay();
+			setdisplay();
 			return;
 		}
 
@@ -309,6 +312,9 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 				gotoxy(16, 10);
 				printf("양식장이 구매되었습니다. (+1)                              ");
 			}
+
+			else if (key == 99 || key == 67) finish(&money);
+
 			else {
 				gotoxy(16, 10);
 				printf("구매가 불가합니다.                                         ");
@@ -317,11 +323,12 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 
 		//집 구매
 		else if (key == 99 || key == 67) {
-
+			finish(*money);
 		}
 	}
 }
 
+// 전복 따기
 void harvest(long long* Aclick, long long* abalone, long long* big, long long* smal) {
 	for (int i = 0; i < *Aclick; i++) {
 		int persent = rand() % 100;
@@ -336,6 +343,7 @@ void harvest(long long* Aclick, long long* abalone, long long* big, long long* s
 	}
 }	
 
+// 레벨업
 void levelUp(long long* level, long long* Aclick, long long* money, long long* price) {
 	if (*level >= 999) {
 		*price = 2147483647;
@@ -357,8 +365,27 @@ void levelUp(long long* level, long long* Aclick, long long* money, long long* p
 	}
 }
 
-void finish(long long* money) {
-	if (*money == 4000000000) {
-
+// 끝
+void finish(long long money) {
+	if (money >= 1000000000000) {
+		system("cls");
+		gotoxy(6, 1);
+		printf("                                               끝끝끝끝끝끝 끝끝끝끝끝끝\n");
+		printf("                                                         끝           끝\n");
+		printf("                                                         끝           끝\n");
+		printf("                                                         끝           끝\n");
+		printf("                                               끝끝끝끝끝끝끝끝끝끝끝끝끝\n");
+		printf("\n");
+		printf("                                                 끝끝끝끝끝끝끝끝끝끝끝\n");
+		printf("                                                 끝\n");
+		printf("                                                 끝끝끝끝끝끝끝끝끝끝끝\n");
+		printf("                                                 끝\n");
+		printf("                                                 끝끝끝끝끝끝끝끝끝끝끝\n");
+		gotoxy(20, 1);
+		exit(1);
+	}
+	else {
+		gotoxy(16, 10);
+		printf("구매가 불가합니다.                                         ");
 	}
 }
