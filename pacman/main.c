@@ -1,3 +1,4 @@
+
 #include <Windows.h>
 #include <stdio.h>
 #include <conio.h>
@@ -40,17 +41,28 @@ char newStorydown[][100] = {
 	{"완도 전복에서 신종 바이러스 발견"}
 };
 
+void CursorView()
+{
+	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+	cursorInfo.dwSize = 1;
+	cursorInfo.bVisible = FALSE;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+
 void gotoxy(int x, int y);
 void showStart();
 void setdisplay();
+void printFace(int face);
 void showMoney(long long abalone, long long money, long long Aclick, long long big, long long smal, long long numHome, long long nursery, long long quote, long long price);
-void openStore(long long *abalone, long long *money, long long *Aclick, long long *big, long long *smal, long long numHome, long long *nursery, long long quote, char news[]);
+void openStore(long long *abalone, long long *money, long long *Aclick, long long *big, long long *smal, long long numHome, long long *nursery, long long quote, char news[], int face);
 void harvest(long long* Aclick, long long* abalone, long long* big, long long* smal);
 void levelUp(long long* level, long long* Aclick, long long* money, long long* price);
 void finish(long long money);
 
 
 int main() {
+	CursorView();
+
 	system("title 완도 어민 키우기");
 	showStart();
 
@@ -61,26 +73,34 @@ int main() {
 
 	srand(time(NULL));
 	long long abalone = 0, money = 0, Aclick = 1, nursery = 0, numHome = 0, smal = 0, big = 0, cnt = 0, level = 1, price = 10000, temp;
-	int quote, limit;
+	int quote, limit, face = 2;
 
 	setdisplay();
+	printFace(face);
 	quote = (rand() % 150 + 20) * 100;
 	temp = quote;
 	char news[100] = "완도 어민 오**, 완도의 이장이 되다";
 	limit = rand() % 500 + 100;
 	showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
+	//clock_t start = clock();
 	while (1) {
 	loot:
 		if (_kbhit()) {
 
+			// 전복 시세 설정 & 얼굴 설정
 			if (cnt >= limit) {
 				quote = (rand() % 100 + 25) * 100;
 				limit = rand() % 500 + 100;
 				cnt = 0;
+				// 시세에 맞는 뉴스
 				if (quote > temp){
+					face = 1;
+					printFace(face);
 					strcpy_s(news, 100, newStoryUp[rand() % 10]);
 				}
 				else {
+					face = 0;
+					printFace(face);
 					strcpy_s(news, 100, newStorydown[rand() % 10]);
 				}
 				temp = quote;
@@ -108,6 +128,7 @@ int main() {
 					case 780:
 						system("cls");
 						setdisplay();
+						printFace(face);
 						showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 						goto loot;
 					default:
@@ -117,9 +138,9 @@ int main() {
 
 				//레벨업
 				else if (key == l || key == L) levelUp(&level, &Aclick, &money, &price);
-
+					
 				// 상점 열기
-				else if (key == f || key == F) openStore(&abalone, &money, &Aclick, &big, &smal, numHome, &nursery, quote, news);
+				else if (key == f || key == F) openStore(&abalone, &money, &Aclick, &big, &smal, numHome, &nursery, quote, news, face);
 
 				// 전복 채취
 				else if (key == SPACEBAR) harvest(&Aclick, &abalone, &big, &smal);
@@ -133,6 +154,8 @@ int main() {
 	
 	return 0;
 }
+
+
 
 void gotoxy(int x, int y) {
 	COORD Pos = { y - 1,x - 1 };
@@ -200,6 +223,9 @@ void showStart() {
 		goto A;
 	case 51:
 		system("cls");
+		gotoxy(10, 1);
+		printf("                              1미에\n");
+		printf("                              큰 전복 : 4개                       작은 전복 : 6개");
 		gotoxy(15, 1);
 		printf("                              Space : 전복 따기                   q/Q   : 나가기\n\n");
 		printf("                              f/F   : 상점                        ㅣ/ㅣ : 레벨업\n");
@@ -223,7 +249,7 @@ void setdisplay() {
 	printf("         ┌---------------------------------------------------------------------------------------------------┐\n");
 	printf("         │                                                                                                   │\n");
 	printf("         └---------------------------------------------------------------------------------------------------┘\n");
-	
+
 	//bottom
 	gotoxy(24, 1);
 	printf("                                                                                                      상점(f) \n");
@@ -234,11 +260,70 @@ void setdisplay() {
 	printf("         └---------------------------------------------------------------------------------------------------┘\n");
 }
 
+void printFace(int face) {
+	if (face == 1) {
+		gotoxy(5, 1);
+		printf("        58ZZZZZZZZZZZZZ8y \n");
+		printf("     ZZZzyzzzzzzzzzzzzzwDZZZ \n");
+		printf("   9ZDzWzw8BzzzzzzzzzBBD5,,z9Zy \n");
+		printf("  ZZZyWzzDB55555555555555D5W Z5\n");
+		printf(" ZWjyyyyyyyyyyyyyyyyyyyyyyyyyWyZ88\n");
+		printf(" ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n");
+		printf(" yZZZ                         ZZZy \n");
+		printf(" Z  Z    ⌒             ⌒    Z  y  \n");
+		printf(" ZZ Z    ○             ○    ZZ Z  \n");
+		printf("  E9Z                       yZ8BB  \n");
+		printf("    Z8          ㅁ          ZZ    \n");
+		printf("     Z                    BZ    \n");
+		printf("     Z          ∪        BZ    \n");
+		printf("       ZZZ            ,ZZZ   \n");
+		printf("         ZZZZZZZZZZZZZZZ     \n");
+	}
+	else if (face == 0) {
+		gotoxy(5, 1);
+		printf("        58ZZZZZZZZZZZZZ8y \n");
+		printf("     ZZZzyzzzzzzzzzzzzzwDZZZ \n");
+		printf("   9ZDzWzw8BzzzzzzzzzBBD5,,z9Zy \n");
+		printf("  ZZZyWzzDB55555555555555D5W Z5\n");
+		printf(" ZWjyyyyyyyyyyyyyyyyyyyyyyyyyWyZ88\n");
+		printf(" ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n");
+		printf(" yZZZ                         ZZZy \n");
+		printf(" Z  Z    ＼             ／    Z  y  \n");
+		printf(" ZZ Z    ○             ○    ZZ Z  \n");
+		printf("  E9Z                       yZ8BB  \n");
+		printf("    Z8          ㅁ          ZZ    \n");
+		printf("     Z                    BZ    \n");
+		printf("     Z          ∩        BZ  凸 \n");
+		printf("       ZZZ            ,ZZZ   \n");
+		printf("         ZZZZZZZZZZZZZZZ     \n");
+	}
+	else {
+		gotoxy(5, 1);
+		printf("        58ZZZZZZZZZZZZZ8y \n");
+		printf("     ZZZzyzzzzzzzzzzzzzwDZZZ \n");
+		printf("   9ZDzWzw8BzzzzzzzzzBBD5,,z9Zy \n");
+		printf("  ZZZyWzzDB55555555555555D5W Z5\n");
+		printf(" ZWjyyyyyyyyyyyyyyyyyyyyyyyyyWyZ88\n");
+		printf(" ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n");
+		printf(" yZZZ                         ZZZy \n");
+		printf(" Z  Z     -             -     Z  y  \n");
+		printf(" ZZ Z    ○             ○    ZZ Z  \n");
+		printf("  E9Z                       yZ8BB  \n");
+		printf("    Z8          ㅁ          ZZ    \n");
+		printf("     Z          ㅜ         BZ    \n");
+		printf("     Z          ◎        BZ    \n");
+		printf("       ZZZ            ,ZZZ   \n");
+		printf("         ZZZZZZZZZZZZZZZ     \n");
+	}
+}
+
 // 여러가지 정보 보여주기
 void showMoney(long long abalone, long long money, long long Aclick, long long big, long long smal, long long level, long long nursery, long long quote, long long price) {
 	// header
 	gotoxy(2, 12);
-	printf("%5lld : 클릭당 전복 개수%67lld원 : 돈", Aclick, money);
+	printf("%91lld원 : 돈", money);
+	gotoxy(2, 12);
+	printf("클릭당 전복 개수 : %lld", Aclick);
 	gotoxy(4, 86);
 	printf("1미 %6lld원 : 전복 시세", quote);
 	
@@ -252,6 +337,7 @@ void showMoney(long long abalone, long long money, long long Aclick, long long b
 		printf("레벨 : max%74lld : 작은 사이즈", smal);
 		gotoxy(28, 12);
 		printf("%86lld : 큰 사이즈", big);
+		gotoxy(20, 50);
 
 	}
 	else {
@@ -259,12 +345,13 @@ void showMoney(long long abalone, long long money, long long Aclick, long long b
 		printf("레벨 : %4lld%73lld : 작은 사이즈", level, smal);
 		gotoxy(28, 12);
 		printf("Level Up 비용 : %8lld%62lld : 큰 사이즈", price, big);
+		gotoxy(20, 50);
 	}
 
 }
 
 // 시장
-void openStore(long long *abalone, long long *money, long long *Aclick, long long* big, long long* smal, long long numHome, long long *nursery, long long quote, char news[]) {
+void openStore(long long *abalone, long long *money, long long *Aclick, long long* big, long long* smal, long long numHome, long long *nursery, long long quote, char news[], int face) {
 	static int nurseryPrice = 1500000;
 	system("cls");
 
@@ -280,14 +367,17 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 	printf("         └---------------------------------------------------------------------------------------------------┘\n");
 
 	while (1) {
-		gotoxy(14, 50);
+		gotoxy(16, 50);
 		printf("양식장 가격 : %d", nurseryPrice);
+		gotoxy(16, 80);
+		printf("집 가격 : 1000000000000");
 		gotoxy(29, 1);
 		int key = _getch();
 		printf("%d", key);
 		if (key == f || key == F) {
 			system("cls");
 			setdisplay();
+			printFace(face);
 			return;
 		}
 
@@ -313,8 +403,6 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 				printf("양식장이 구매되었습니다. (+1)                              ");
 			}
 
-			else if (key == 99 || key == 67) finish(&money);
-
 			else {
 				gotoxy(16, 10);
 				printf("구매가 불가합니다.                                         ");
@@ -322,15 +410,14 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 		}
 
 		//집 구매
-		else if (key == 99 || key == 67) {
-			finish(*money);
-		}
+		else if (key == 99 || key == 67) finish(*money);
 	}
 }
 
 // 전복 따기
 void harvest(long long* Aclick, long long* abalone, long long* big, long long* smal) {
 	for (int i = 0; i < *Aclick; i++) {
+
 		int persent = rand() % 100;
 
 		if (persent >= 80) { // 큰 전복
@@ -340,6 +427,10 @@ void harvest(long long* Aclick, long long* abalone, long long* big, long long* s
 			*smal = *smal + 1;
 		}
 		*abalone = *abalone + 1;
+	}
+	for (int i = 0; i < *Aclick; i++) {
+		gotoxy(rand() % 19 + 5, rand() % 80 + 38);
+		printf("()");
 	}
 }	
 
@@ -382,6 +473,31 @@ void finish(long long money) {
 		printf("                                                 끝\n");
 		printf("                                                 끝끝끝끝끝끝끝끝끝끝끝\n");
 		gotoxy(20, 1);
+		printf("\n\n");
+		Sleep(1000);
+		printf("\n\n계속하려면 아무 키나 누르십시오...");
+		trash = _getch();
+		system("cls");
+		char story[] = "내 집마련에 성공한 완도 어민 오XX";
+		char story2[] = "그는 부자가 돼서 다시 비트코인을 시작하는데...";
+
+		gotoxy(3, 40);
+		for (int i = 0; i < strlen(story); i++) {
+			printf("%c", story[i]);
+			Sleep(70);
+		}
+		printf("\n");
+		Sleep(1000);
+
+		gotoxy(4, 40);
+		for (int i = 0; i < strlen(story2); i++) {
+			printf("%c", story2[i]);
+			Sleep(70);
+		}
+		printf("\n");
+		Sleep(1000);
+		printf("\n\n종료하시려면 아무키나 누르십시오");
+		trash = _getch();
 		exit(1);
 	}
 	else {
