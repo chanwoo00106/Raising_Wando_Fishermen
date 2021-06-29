@@ -1,4 +1,3 @@
-
 #include <Windows.h>
 #include <stdio.h>
 #include <conio.h>
@@ -56,6 +55,7 @@ void printFace(int face);
 void showMoney(long long abalone, long long money, long long Aclick, long long big, long long smal, long long numHome, long long nursery, long long quote, long long price);
 void openStore(long long *abalone, long long *money, long long *Aclick, long long *big, long long *smal, long long numHome, long long *nursery, long long quote, char news[], int face);
 void harvest(long long* Aclick, long long* abalone, long long* big, long long* smal);
+void printAbalone(long long abalone, long long Aclick, int set);
 void levelUp(long long* level, long long* Aclick, long long* money, long long* price);
 void finish(long long money);
 
@@ -102,6 +102,7 @@ int main() {
 					face = 0;
 					printFace(face);
 					strcpy_s(news, 100, newStorydown[rand() % 10]);
+					showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
 				}
 				temp = quote;
 			}
@@ -115,35 +116,28 @@ int main() {
 			else {
 				//나가기
 				if (key == Q || key == q) {
-					re:
 					system("cls");
-
-					printf("정말 종료하시겠습니까? (y/n)\n");
-					int ch;
-					switch (ch = _getch()) {
-					case 121:
-					case 891:
-						exit(1);
-					case 110:
-					case 780:
-						system("cls");
-						setdisplay();
-						printFace(face);
-						showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
-						goto loot;
-					default:
-						goto re;
-					}
+					showStart();
+					setdisplay();
+					printFace(face);
+					showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
+					printAbalone(abalone, Aclick, 0);
 				}
 
 				//레벨업
-				else if (key == l || key == L) levelUp(&level, &Aclick, &money, &price);
+				if (key == l || key == L) levelUp(&level, &Aclick, &money, &price);
 					
 				// 상점 열기
-				else if (key == f || key == F) openStore(&abalone, &money, &Aclick, &big, &smal, numHome, &nursery, quote, news, face);
+				if (key == f || key == F) {
+					openStore(&abalone, &money, &Aclick, &big, &smal, numHome, &nursery, quote, news, face);
+					printAbalone(abalone, Aclick, 0);
+				}
 
 				// 전복 채취
-				else if (key == SPACEBAR) harvest(&Aclick, &abalone, &big, &smal);
+				if (key == SPACEBAR) {
+					harvest(&Aclick, &abalone, &big, &smal);
+					printAbalone(abalone, Aclick, 1);
+				}
 			}
 			
 
@@ -180,6 +174,9 @@ void showStart() {
 	printf("                                           0    0     0000000       0     0\n");
 	printf("                                          0     0        0         0      0\n");
 	printf("                                         0      0        0        0       0\n");
+
+	gotoxy(29, 1);
+	printf("!!한글이면 키가 입력이 안될 수 있습니다.!!");
 
 	// 로고 출력
 	gotoxy(19, 50);
@@ -252,7 +249,7 @@ void setdisplay() {
 
 	//bottom
 	gotoxy(24, 1);
-	printf("                                                                                                      상점(f) \n");
+	printf("                                                                                               나가기(q) 상점(f) \n");
 	printf("         ┌---------------------------------------------------------------------------------------------------┐\n");
 	printf("         │                                                                                                   │\n");
 	printf("         │                                                                                                   │\n");
@@ -275,7 +272,7 @@ void printFace(int face) {
 		printf("  E9Z                       yZ8BB  \n");
 		printf("    Z8          ㅁ          ZZ    \n");
 		printf("     Z                    BZ    \n");
-		printf("     Z          ∪        BZ    \n");
+		printf("     Z          ∪        BZ    \n");	
 		printf("       ZZZ            ,ZZZ   \n");
 		printf("         ZZZZZZZZZZZZZZZ     \n");
 	}
@@ -370,10 +367,9 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 		gotoxy(16, 50);
 		printf("양식장 가격 : %d", nurseryPrice);
 		gotoxy(16, 80);
-		printf("집 가격 : 1000000000000");
+		printf("집 가격 : 1,000,000,000,000");
 		gotoxy(29, 1);
 		int key = _getch();
-		printf("%d", key);
 		if (key == f || key == F) {
 			system("cls");
 			setdisplay();
@@ -428,11 +424,23 @@ void harvest(long long* Aclick, long long* abalone, long long* big, long long* s
 		}
 		*abalone = *abalone + 1;
 	}
-	for (int i = 0; i < *Aclick; i++) {
-		gotoxy(rand() % 19 + 5, rand() % 80 + 38);
-		printf("()");
-	}
 }	
+
+void printAbalone(long long abalone, long long Aclick, int set) {
+	if (set) {
+		for (int i = 0; i < Aclick; i++) {
+			gotoxy(rand() % 19 + 5, rand() % 79 + 37);
+			printf("()");
+		}
+	}
+	else {
+		for (int i = 0; i < abalone; i++) {
+			gotoxy(rand() % 19 + 5, rand() % 79 + 37);
+			printf("()");
+		}
+	}
+	
+}
 
 // 레벨업
 void levelUp(long long* level, long long* Aclick, long long* money, long long* price) {
