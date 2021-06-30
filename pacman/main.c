@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ll long long
 #define q 113
 #define f 102
 #define Q 813
@@ -48,6 +47,14 @@ void CursorView()
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
 
+//blackjack 함수
+void setting(int* Card);
+void CardSetting(int* Dealer, int* Player, int* Card);
+int printCard(int* setCard, int* i, int* or);
+void GameFinish(int gameSet, long long* bet);
+
+
+//main에 있는 함수
 void gotoxy(int x, int y);
 void showStart();
 void setdisplay();
@@ -57,6 +64,7 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 void harvest(long long* Aclick, long long* abalone, long long* big, long long* smal);
 void printAbalone(long long abalone, long long Aclick, int set);
 void levelUp(long long* level, long long* Aclick, long long* money, long long* price);
+void Gacha(long long* money);
 void finish(long long money);
 
 
@@ -72,7 +80,7 @@ int main() {
 	KEY_EVENT_RECORD keyEvent;
 
 	srand(time(NULL));
-	long long abalone = 0, money = 0, Aclick = 1, nursery = 0, numHome = 0, smal = 0, big = 0, cnt = 0, level = 1, price = 10000, temp;
+	long long abalone = 0, money = 1000000000000000, Aclick = 1, nursery = 0, numHome = 0, smal = 0, big = 0, cnt = 0, level = 1, price = 10000, temp;
 	int quote, limit, face = 2;
 
 	setdisplay();
@@ -138,6 +146,14 @@ int main() {
 					harvest(&Aclick, &abalone, &big, &smal);
 					printAbalone(abalone, Aclick, 1);
 				}
+				if (key == 103) {
+					system("cls");
+					Gacha(&money);
+					setdisplay();
+					printFace(face);
+					showMoney(abalone, money, Aclick, big, smal, level, nursery, quote, price);
+					printAbalone(abalone, Aclick, 0);
+				}
 			}
 			
 
@@ -149,7 +165,233 @@ int main() {
 	return 0;
 }
 
+// blackjack---------------------------------------------------------------------------------------------------
+void setting(int* Card) {
+	// 카드 랜덤 셋팅
+	int w = 0, r = 0;
+	int swit[52];
 
+	for (int i = 0; i < 52; i++) {
+		swit[i] = 0;
+	}
+
+	srand(time(NULL));
+	while (w < 52) {
+		r = rand() % 52;
+		if (swit[r] == 0) {
+			swit[r] = 1;
+			Card[w] = r + 1;
+			w++;
+		}
+	}
+}
+
+void CardSetting(int* Dealer, int* Player, int* Card) {
+	for (int i = 0; i < 10; i++)
+	{
+		Dealer[i] = Card[i];
+		Player[i] = Card[i + 10];
+	}
+
+}
+
+int printCard(int* setCard, int* i, int* or) {
+	int card = setCard[*i], sum = 0;
+
+	if (card >= 1 && card <= 13) {
+		switch (card)
+		{
+		case 1:
+			printf("♠ A");
+			sum = 11;
+			*or = 1;
+			break;
+		case 11:
+			printf("♠ J");
+			sum = 10;
+			break;
+		case 12:
+			printf("♠ Q");
+			sum = 10;
+			break;
+		case 13:
+			printf("♠ K");
+			sum = 10;
+			break;
+		default:
+			printf("♠ %d", card);
+			sum = card;
+			break;
+		}
+	}
+	if (card >= 14 && card <= 26) {
+		switch (card - 13)
+		{
+		case 1:
+			printf("◆ A");
+			sum = 11;
+			*or = 1;
+			break;
+		case 11:
+			printf("◆ J");
+			sum = 10;
+			break;
+		case 12:
+			printf("◆ Q");
+			sum = 10;
+			break;
+		case 13:
+			printf("◆ K");
+			sum = 10;
+			break;
+		default:
+			printf("◆ %d", card - 13);
+			sum = card - 13;
+			break;
+		}
+	}
+	if (card >= 27 && card <= 39) {
+		switch (card - 26)
+		{
+		case 1:
+			printf("♥ A");
+			*or = 1;
+			sum = 11;
+			break;
+		case 11:
+			printf("♥ J");
+			sum = 10;
+			break;
+		case 12:
+			printf("♥ Q");
+			sum = 10;
+			break;
+		case 13:
+			printf("♥ K");
+			sum = 10;
+			break;
+		default:
+			printf("♥ %d", card - 26);
+			sum = card - 26;
+			break;
+		}
+	}
+	if (card >= 40 && card <= 52) {
+		switch (card - 39)
+		{
+		case 1:
+			printf("♣ A");
+			sum = 11;
+			*or = 1;
+			break;
+		case 11:
+			printf("♣ J");
+			sum = 10;
+			break;
+		case 12:
+			printf("♣ Q");
+			sum = 10;
+			break;
+		case 13:
+			printf("♣ K");
+			sum = 10;
+			break;
+		default:
+			printf("♣ %d", card - 39);
+			sum = card - 39;
+			break;
+		}
+	}
+	printf("\n");
+	*i = *i + 1;
+	return sum;
+}
+
+int gameStart(int* Dealer, int* Player) {
+	int pi = 0, di = 0, or, ord, Psum = 0, HorS, Dsum = 0, gameSet = -1;
+	printf("your card\n");
+
+	// 플레이어 시작 카드 2장
+	Psum = Psum + printCard(Player, &pi, &or);
+	Psum = Psum + printCard(Player, &pi, &or);
+
+	while (1)
+	{
+		printf("Hit(1) or Stay(2) : ");
+		HorS = _getch();
+		printf("\n");
+
+		// Hit
+		if (HorS == 49) {
+			Psum = Psum + printCard(Player, &pi, &or);
+
+			// 수가 21을 넘고 A가 있을 때
+			if (or == 1 && Psum > 21) {
+				Psum = Psum - 10; // A가 있고 21이 넘으면 -10;
+				or = 0;
+			}
+
+			// 21일 때
+			if (Psum == 21) {
+				printf("\n※You Black Jack※\n");
+				gameSet = 1;
+				break;
+			}
+
+			// 21 보다 적을 때
+			if (Psum > 21) {
+				gameSet = -1;
+				break;
+			}
+		}
+
+		// Stay
+		else if (HorS == 50) {
+			break;
+		}
+	}
+
+	printf("\n\n\nDealer Card Open !!\n");
+	Dsum = Dsum + printCard(Dealer, &di, &ord);
+	Dsum = Dsum + printCard(Dealer, &di, &ord);
+
+	if (Dsum < Psum && Psum <= 21) {
+		Dsum = Dsum + printCard(Dealer, &di, &ord);
+		if (Dsum > 21) gameSet = 1;
+	}
+
+	if (di == 1 && Dsum > 21) {
+		Dsum = Dsum - 10; // A가 있고 21이 넘으면 -10;
+		di = 0;
+	}
+
+	if (Dsum == 21) {
+		printf("\n※Dealer Black Jack※\n");
+		gameSet = -1;
+	}
+
+
+	if (Psum == Dsum) gameSet = 0;
+	if (Psum > Dsum && Psum <= 21) gameSet = 1;
+
+	return gameSet;
+}
+
+void GameFinish(int gameSet, long long* bet) {
+	if (gameSet == 1) {
+		*bet *= 2;
+		printf("You Win!!!");
+	}
+	else if (gameSet == -1) {
+		*bet = 0;
+		printf("You Lose");
+	}
+	else {
+		printf("You Drow");
+	}
+}
+
+// wando-------------------------------------------------------------------------------------------------------
 
 void gotoxy(int x, int y) {
 	COORD Pos = { y - 1,x - 1 };
@@ -394,7 +636,7 @@ void openStore(long long *abalone, long long *money, long long *Aclick, long lon
 				*money -= nurseryPrice;
 				nurseryPrice *= 1.5;
 				*nursery += 1;
-				*Aclick += 5;
+				*Aclick += 10;
 				gotoxy(16, 10);
 				printf("양식장이 구매되었습니다. (+1)                              ");
 			}
@@ -428,12 +670,14 @@ void harvest(long long* Aclick, long long* abalone, long long* big, long long* s
 
 void printAbalone(long long abalone, long long Aclick, int set) {
 	if (set) {
+		if (Aclick >= 1000) Aclick = 1000;
 		for (int i = 0; i < Aclick; i++) {
 			gotoxy(rand() % 19 + 5, rand() % 79 + 37);
 			printf("()");
 		}
 	}
 	else {
+		if (abalone >= 1000) abalone = 1000;
 		for (int i = 0; i < abalone; i++) {
 			gotoxy(rand() % 19 + 5, rand() % 79 + 37);
 			printf("()");
@@ -462,6 +706,89 @@ void levelUp(long long* level, long long* Aclick, long long* money, long long* p
 		gotoxy(24, 1);
 		printf("           구매 불가                      ");
 	}
+}
+
+//블랙잭
+void Gacha(long long* money) {
+	reBet:
+	system("cls");
+	long long bet;
+	printf("※black Jack※\n");
+	if (*money <= 0 || *money < 10000) {
+		printf("돈이 너무 부족합니다");
+		printf("\n\n계속하려면 아무 키나 누르십시오...");
+		trash = _getch();
+		system("cls");	
+		return;
+	}
+	printf("돈 : %lld\n", *money);
+	while (1) {
+		printf("배팅 할 금액을 적어주세요 : ");
+		scanf_s("%lld", &bet);
+
+		if (bet > *money) printf("금액이 너무 높습니다.\n");
+		else if (bet < 0 || bet < 10000) printf("배팅 금액은 만원 이상입니다\n");
+		else if (*money >= bet) break;
+		else printf("다시 입력해주세요\n");
+	}
+
+	*money -= bet;
+
+	system("cls");
+
+	// 블랙잭 시작
+	int Card[52], Dealer[10], Player[10], gameSet, get;
+
+	while (1) {
+		setting(Card);
+		CardSetting(Dealer, Player, Card);
+		gameSet = gameStart(Dealer, Player);
+		GameFinish(gameSet, &bet);
+
+		if (bet == 0) { 
+			printf("\n돈을 전부 잃었습니다\n");
+			while (1) {
+				printf("다시 배팅하시겠습니까? (1)/(2) : ");
+				get = _getch();
+				printf("\n");
+				if (get == 49) goto reBet;
+				else if (get == 50) {
+					printf("안녕히가십시오\n");
+					printf("\n\n계속하려면 아무 키나 누르십시오...");
+					trash = _getch();
+					system("cls");
+					return;
+				}
+			}
+		}
+
+	Retry:
+		printf("\n\n획득 할 금액 : %lld원\n\n", bet);
+		printf("만약 다음판을 이긴다면... : %lld원\n", bet * 2);
+		printf("\n\n계속(1) / 그만하기(2) : ");
+		get = _getch();
+
+		printf("\n");
+
+		if (get == 50)
+		{
+			printf("Thanks.\n"); // 종료
+			break;
+		}
+		else if (get != 49) {
+			printf("reTry.\n");
+			goto Retry;
+		}
+
+		system("cls");
+	}
+
+	*money += bet;
+
+	printf("\n\n계속하려면 아무 키나 누르십시오...");
+	trash = _getch();
+
+	system("cls");
 }
 
 // 끝
