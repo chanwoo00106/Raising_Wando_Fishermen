@@ -148,7 +148,7 @@
     <ResourceCompile Include="Wando.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\완도.ico" />
+    <Image Include="..\Wando.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

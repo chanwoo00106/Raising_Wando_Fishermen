@@ -343,6 +343,13 @@ int gameStart(int* Dealer, int* Player) {
 
 		// Stay
 		else if (HorS == 50) {
+
+			// 시작할 때 블랙잭
+			if (Psum == 21) {
+				printf("\n※You Black Jack※\n");
+				gameSet = 1;
+			}
+
 			break;
 		}
 	}
@@ -604,7 +611,7 @@ void openStore(long long* abalone, long long* money, long long* Aclick, long lon
 	printf("         └---------------------------------------------------------------------------------------------------┘\n");
 
 	while (1) {
-		if (*nursery > 200) {
+		if (*nursery < 200) {
 			gotoxy(16, 50);
 			printf("양식장 가격 : %d", nurseryPrice);
 		}
@@ -636,7 +643,7 @@ void openStore(long long* abalone, long long* money, long long* Aclick, long lon
 
 		//양식장 구매
 		else if (key == 98 || key == 66) {
-			if (*nursery < 200) {
+			if (*nursery > 200) {
 				gotoxy(16, 10);
 				printf("양식장이 너무 많습니다.                                         ");
 			}
@@ -718,9 +725,11 @@ void levelUp(long long* level, long long* Aclick, long long* money, long long* p
 
 //블랙잭
 void Gacha(long long* money) {
+	long long startMoney = *money;
 reBet:
 	system("cls");
-	long long bet;
+	long long bet = 0;
+	int get;
 	printf("※black Jack※\n");
 	if (*money <= 0 || *money < 10000) {
 		printf("돈이 너무 부족합니다");
@@ -729,15 +738,29 @@ reBet:
 		system("cls");
 		return;
 	}
+	int temp;
+	long long arr[10] = { 0, };
 	printf("돈 : %lld\n", *money);
+	for (int i = 0; i < 10; i++) {
+		temp = i + 1;
+		arr[i] = (int) (*money / temp);
+		printf("(%d) : %lld원\n\n", i, arr[i]);
+	}
+	printf("\n");
 	while (1) {
-		printf("배팅 할 금액을 적어주세요 : ");
-		scanf_s("%lld", &bet);
-
-		if (bet > *money) printf("금액이 너무 높습니다.\n");
-		else if (bet < 0 || bet < 10000) printf("배팅 금액은 만원 이상입니다\n");
-		else if (*money >= bet) break;
-		else printf("다시 입력해주세요\n");
+		get = _getch();
+		if (get == 48) bet = arr[0];
+		else if (get == 49) bet = arr[1];
+		else if (get == 50) bet = arr[2];
+		else if (get == 51) bet = arr[3];
+		else if (get == 52) bet = arr[4];
+		else if (get == 53) bet = arr[5];
+		else if (get == 54) bet = arr[6];
+		else if (get == 55) bet = arr[7];
+		else if (get == 56) bet = arr[8];
+		else if (get == 57) bet = arr[9];
+		else continue;
+		break;
 	}
 
 	*money -= bet;
@@ -745,7 +768,7 @@ reBet:
 	system("cls");
 
 	// 블랙잭 시작
-	int Card[52], Dealer[10], Player[10], gameSet, get;
+	int Card[52], Dealer[10], Player[10], gameSet;
 
 	while (1) {
 		setting(Card);
@@ -754,14 +777,16 @@ reBet:
 		GameFinish(gameSet, &bet);
 
 		if (bet == 0) {
-			printf("\n돈을 전부 잃었습니다\n");
+			printf("\n배팅 금액을 전부 잃었습니다\n");
+			printf("잔액 : %lld원\n\n", *money);
 			while (1) {
-				printf("다시 배팅하시겠습니까? (1)/(2) : ");
+				printf("다시 배팅하시겠습니까? (계속 : 1)/(그만 : 2) : ");
 				get = _getch();
 				printf("\n");
 				if (get == 49) goto reBet;
 				else if (get == 50) {
-					printf("안녕히가십시오\n");
+					printf("Thanks.\n\n");
+					printf("당신이 잃은 돈 : -%lld원\n", startMoney - *money);
 					printf("\n\n계속하려면 아무 키나 누르십시오...");
 					trash = _getch();
 					system("cls");
@@ -770,32 +795,30 @@ reBet:
 			}
 		}
 
-	Retry:
 		printf("\n\n획득 할 금액 : %lld원\n\n", bet);
 		printf("만약 다음판을 이긴다면... : %lld원\n", bet * 2);
 		printf("\n\n계속(1) / 그만하기(2) : ");
+		printf("\n");
+	Retry:
 		get = _getch();
 
-		printf("\n");
-
-		if (get == 50)
-		{
+		if (get == 50) {
 			printf("Thanks.\n"); // 종료
 			break;
 		}
-		else if (get != 49) {
-			printf("reTry.\n");
-			goto Retry;
-		}
+		else if (get != 49) goto Retry;
 
 		system("cls");
 	}
 
-	*money += bet;
+	*money = *money +  bet;
+
+	if (*money - startMoney > 0) printf("당신이 획득한 돈 : +%lld원", *money - startMoney);
+	else printf("당신이 잃은 돈 : -%lld원\n", startMoney - *money);
 
 	printf("\n\n계속하려면 아무 키나 누르십시오...");
 	trash = _getch();
-
+	
 	system("cls");
 }
 
