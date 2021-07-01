@@ -1,0 +1,14 @@
+﻿  main.c
+C:\Users\chan0\source\repos\pacman\pacman\main.c(82,18): warning C4244: '함수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\chan0\source\repos\pacman\pacman\main.c(95,6): warning C4102: 'loot': 참조되지 않은 레이블입니다.
+C:\Users\chan0\source\repos\pacman\pacman\main.c(441,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\chan0\source\repos\pacman\pacman\main.c(449,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\chan0\source\repos\pacman\pacman\main.c(645,24): warning C4244: '*=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\chan0\source\repos\pacman\pacman\main.c(828,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\chan0\source\repos\pacman\pacman\main.c(836,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  코드를 생성하고 있습니다.
+  1 of 25 functions ( 4.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  pacman.vcxproj -> C:\Users\chan0\source\repos\pacman\Release\Wando.exe

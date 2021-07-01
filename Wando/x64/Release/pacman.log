@@ -1,0 +1,2 @@
+﻿LINK : error LNK2001: 확인할 수 없는 외부 기호 mainCRTStartup
+C:\Users\chan0\source\repos\pacman\x64\Release\Wando.exe : fatal error LNK1120: 1개의 확인할 수 없는 외부 참조입니다.
