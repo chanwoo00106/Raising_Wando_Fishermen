@@ -1,6 +1,6 @@
 # 완도 어민 키우기
 
-[완도 어민 설치](Release/Wando.exe)
+[완도 어민 설치](https://github.com/chanwoo00106/Raising_Wando_Fishermen/raw/master/Release/Wando.exe)
 
 ## 사용방법
 
